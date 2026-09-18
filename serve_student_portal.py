@@ -18,10 +18,9 @@ if __name__ == "__main__":
     os.chdir(DIRECTORY)
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print(f"=======================================================")
-        print(f"  FAP Student Attendance Portal (Cổng Điểm Danh SV)   ")
-        print(f"  Running locally at: http://localhost:{PORT}         ")
-        print(f"  GitHub Pages Live: https://nakinominh.github.io/lab1-prm/ ")
-        print(f"=======================================================")
-        webbrowser.open(f"http://localhost:{PORT}")
+        print("=" * 55)
+        print("  FAP Student Attendance Portal")
+        print(f"  Running locally at: http://localhost:{PORT}")
+        print("  GitHub Pages Live: https://nakinominh.github.io/lab1-prm/")
+        print("=" * 55)
         httpd.serve_forever()

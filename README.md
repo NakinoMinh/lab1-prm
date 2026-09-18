@@ -27,12 +27,13 @@
 - Thuật toán TOTP sinh mã 6 số tự động thay đổi mỗi 10 giây kèm vòng tròn đếm ngược thời gian trực quan.
 - Mã QR kích thước lớn thân thiện với máy chiếu lớp học, chống chụp ảnh điểm danh hộ từ xa.
 
-### 5. 🎓 Trang Sinh Viên Quét Mã QR & Thẻ Điểm Danh Điện Tử
-- Sinh viên quét QR code trên máy chiếu hoặc truy cập đường link check-in.
-- Tự động nhận diện lớp học và trích xuất mã OTP 10 giây từ mã QR.
-- Sinh viên đăng nhập bằng Email FPT (ví dụ: `minhnbse182173@fpt.edu.vn`) và bấm xác nhận.
-- Xuất **Thẻ Điểm Danh Điện Tử Hợp Lệ (Digital Attendance Pass)** có mã hash chống gian lận SHA-256 và thời gian ghi nhận chi tiết.
-- Cập nhật tức thời trạng thái **CÓ MẶT (PRESENT)** trên màn hình giảng viên.
+### 5. 🎓 Cổng Điểm Danh Sinh Viên Độc Lập (Đã Deploy Online)
+- **Tách riêng hoàn toàn khỏi app giảng viên**: Đã deploy trực tiếp lên GitHub Pages:
+  👉 **[https://nakinominh.github.io/lab1-prm/](https://nakinominh.github.io/lab1-prm/)**
+- **Xác thực sinh viên**: Bắt buộc đăng nhập bằng Email Google FPT (`@fpt.edu.vn` / `@fe.edu.vn`).
+- **Tích hợp Camera quét QR**: Sinh viên mở cổng web trên điện thoại, bấm bật camera để quét mã QR trên máy chiếu giảng viên.
+- **Tự động nhận diện**: Trích xuất lớp, slot, mã OTP 10s và đẩy trạng thái có mặt lên Google Sheets DB.
+- **Thẻ Điểm Danh Điện Tử (Digital Pass)**: Xuất thẻ xác thực có dấu tick xanh, MSSV, họ tên, giờ:phút:giây và mã hash SHA-256 chống gian lận.
 
 ### 6. 🧩 Chrome Extension Tự Động Tích Điểm Danh Trên FAP
 - Tiện ích mở rộng nằm tại thư mục `extension/` (Manifest V3).
