@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 import '../providers/attendance_provider.dart';
-import '../screens/student_qr_checkin_screen.dart';
 
 class QrGeneratorWidget extends StatelessWidget {
   const QrGeneratorWidget({super.key});
+
+  static const String studentPortalUrl = 'https://nakinominh.github.io/lab1-prm/';
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +16,8 @@ class QrGeneratorWidget extends StatelessWidget {
     final secondsLeft = session.otpRemainingSeconds;
     final progress = secondsLeft / 10.0;
 
-    // Encoded QR Data payload
-    final qrData = 'FAP_ATTENDANCE|${session.subjectCode}|${session.classCode}|Slot${session.slot}|$otp';
+    // Encoded QR Data payload - direct link with parameters so scanning opens student portal
+    final qrData = '$studentPortalUrl?subject=${session.subjectCode}&class=${session.classCode}&slot=${session.slot}&otp=$otp';
 
     return Card(
       elevation: 4,
@@ -79,11 +80,11 @@ class QrGeneratorWidget extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
 
             // OTP Display
             Text(
-              'MÃ OTP XÁC THỰC:',
+              'MÃ OTP XÁC THỰC (10s):',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -109,7 +110,7 @@ class QrGeneratorWidget extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
 
             // 10s Timer Progress Bar
             Column(
@@ -150,26 +151,45 @@ class QrGeneratorWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
+
+                // Deployed Student Portal Info Box
+                Container(
                   width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Scaffold(
-                            body: SafeArea(child: StudentQrCheckinScreen()),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xFFCBD5E1)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.public_rounded, size: 15, color: Color(0xFF0284C7)),
+                          SizedBox(width: 6),
+                          Text(
+                            'Cổng Điểm Danh Sinh Viên (Deployed Web):',
+                            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      const SelectableText(
+                        studentPortalUrl,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: 'monospace',
+                          color: Color(0xFFF36F21),
+                          fontWeight: FontWeight.w700,
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                    label: const Text('Mở trang SV Quét Mã Điểm Danh', style: TextStyle(fontSize: 12.5)),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFF36F21),
-                      side: const BorderSide(color: Color(0xFFF36F21)),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Sinh viên dùng điện thoại quét mã QR hoặc truy cập link trên để đăng nhập Google FPT và điểm danh.',
+                        style: TextStyle(fontSize: 10.5, color: Colors.grey[700]),
+                      ),
+                    ],
                   ),
                 ),
               ],

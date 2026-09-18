@@ -5,7 +5,6 @@ import '../widgets/qr_generator_widget.dart';
 import '../widgets/roster_table_widget.dart';
 import '../widgets/sheets_config_widget.dart';
 import 'fap_timetable_screen.dart';
-import 'student_qr_checkin_screen.dart';
 import 'extension_guide_screen.dart';
 
 class TeacherDashboardScreen extends StatefulWidget {
@@ -143,10 +142,9 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
               children: [
                 _buildNavItem(0, 'Lịch dạy FAP (Timetable)', Icons.calendar_month_rounded),
                 _buildNavItem(1, 'Điểm danh QR & OTP 10s', Icons.qr_code_scanner_rounded),
-                _buildNavItem(2, 'SV Quét Mã Điểm Danh', Icons.how_to_reg_rounded),
-                _buildNavItem(3, 'Danh sách sinh viên', Icons.people_alt_outlined),
-                _buildNavItem(4, 'Cấu hình Google Sheets', Icons.cloud_outlined),
-                _buildNavItem(5, 'Tiện ích FAP (Extension)', Icons.extension_rounded),
+                _buildNavItem(2, 'Danh sách sinh viên', Icons.people_alt_outlined),
+                _buildNavItem(3, 'Cấu hình Google Sheets', Icons.cloud_outlined),
+                _buildNavItem(4, 'Tiện ích FAP (Extension)', Icons.extension_rounded),
               ],
             ),
           ),
@@ -403,15 +401,13 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
           ),
         );
       case 2:
-        return const StudentQrCheckinScreen();
-      case 3:
         return const Padding(
           padding: EdgeInsets.all(20.0),
           child: RosterTableWidget(),
         );
-      case 4:
+      case 3:
         return const SheetsConfigWidget();
-      case 5:
+      case 4:
       default:
         return const ExtensionGuideScreen();
     }
