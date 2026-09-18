@@ -119,10 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
     authView.style.display = 'none';
     checkinView.style.display = 'block';
 
-    // If OTP was pre-filled from URL, switch to OTP tab
+    // If OTP was pre-filled from URL (scanned QR), auto-submit attendance immediately
     if (activeSession.otp) {
       inputOtp.value = activeSession.otp;
       switchTab('otp');
+      // Auto-submit after a brief delay so user sees the transition
+      setTimeout(() => {
+        performAttendance(activeSession.otp);
+      }, 500);
     } else {
       startCameraScanner();
     }
