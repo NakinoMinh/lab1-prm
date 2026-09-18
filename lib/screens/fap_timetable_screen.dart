@@ -33,48 +33,45 @@ class FapTimetableScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final provider = Provider.of<AttendanceProvider>(context);
 
-    return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerLowest,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Top Bar: Week navigation, labels, and Add Class action
-            _buildTopBar(context, provider),
-            const SizedBox(height: 16),
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Top Bar: Week navigation, labels, and Add Class action
+          _buildTopBar(context, provider),
+          const SizedBox(height: 16),
 
-            // Timetable Grid Container
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+          // Timetable Grid Container
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: _buildTimetableGrid(context, provider),
-                ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: _buildTimetableGrid(context, provider),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   // ---------------------------------------------------------------------------
-  // Top Bar Widget
+  // Top Bar Widget (Responsive with Wrap to prevent RenderFlex overflow)
   // ---------------------------------------------------------------------------
   Widget _buildTopBar(BuildContext context, AttendanceProvider provider) {
     final theme = Theme.of(context);
@@ -89,11 +86,15 @@ class FapTimetableScreen extends StatelessWidget {
           color: colorScheme.outlineVariant.withValues(alpha: 0.35),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 16,
+        runSpacing: 12,
         children: [
           // Left: Title & Branding icon
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(9),
@@ -132,6 +133,7 @@ class FapTimetableScreen extends StatelessWidget {
 
           // Center: Week Navigation Pill & Current Week Button
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
@@ -176,7 +178,7 @@ class FapTimetableScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               OutlinedButton.icon(
                 onPressed: () => provider.goToCurrentWeek(),
                 icon: const Icon(Icons.today_rounded, size: 16),
@@ -189,7 +191,7 @@ class FapTimetableScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 ),
               ),
             ],
@@ -227,7 +229,6 @@ class FapTimetableScreen extends StatelessWidget {
   Widget _buildTimetableGrid(BuildContext context, AttendanceProvider provider) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Enforce minimum width for desktop scrolling if resized small
         const double minTotalWidth = 1020.0;
         final double totalWidth = constraints.maxWidth > minTotalWidth
             ? constraints.maxWidth
@@ -355,7 +356,6 @@ class FapTimetableScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Day Name
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -381,8 +381,6 @@ class FapTimetableScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 3),
-
-          // Date chip / label
           if (isToday)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -430,7 +428,7 @@ class FapTimetableScreen extends StatelessWidget {
         // Slot Header Cell (Left column)
         Container(
           width: slotColWidth,
-          constraints: const BoxConstraints(minHeight: 115),
+          height: 115,
           margin: const EdgeInsets.symmetric(horizontal: 2),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: BoxDecoration(
@@ -513,20 +511,14 @@ class FapTimetableScreen extends StatelessWidget {
 
     return SizedBox(
       width: width,
+      height: 115,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 2.0),
         child: slots.isEmpty
             ? const _EmptySlotCell()
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (final slot in slots)
-                    _TimetableSlotCard(
-                      slot: slot,
-                      onTap: () => _onSlotTapped(context, slot),
-                    ),
-                ],
+            : _TimetableSlotCard(
+                slot: slots.first,
+                onTap: () => _onSlotTapped(context, slots.first),
               ),
       ),
     );
@@ -568,11 +560,11 @@ class _TimetableSlotCardState extends State<_TimetableSlotCard> {
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
           margin: const EdgeInsets.symmetric(vertical: 2.0),
-          constraints: const BoxConstraints(minHeight: 111),
+          height: 111,
           decoration: BoxDecoration(
             color: _isHovered
                 ? subjectColor.container
-                : subjectColor.container.withValues(alpha: 0.8),
+                : subjectColor.container.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: _isHovered ? subjectColor.primary : subjectColor.border,
@@ -596,149 +588,139 @@ class _TimetableSlotCardState extends State<_TimetableSlotCard> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(9),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Left brand vertical accent bar
-                  Container(
-                    width: 4.5,
-                    color: subjectColor.primary,
-                  ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Left brand vertical accent bar
+                Container(
+                  width: 4.5,
+                  color: subjectColor.primary,
+                ),
 
-                  // Card Content Body
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(9, 8, 8, 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Top Line: Subject Code (bold) & Online badge icon
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  widget.slot.subjectCode,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 13.5,
-                                    letterSpacing: 0.3,
-                                    color: subjectColor.onContainer,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                // Card Content Body
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(9, 8, 8, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Top Line: Subject Code & Online badge icon
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.slot.subjectCode,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 13.5,
+                                  letterSpacing: 0.3,
+                                  color: subjectColor.onContainer,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              if (widget.slot.isOnline)
-                                Tooltip(
-                                  message: 'Lớp học trực tuyến',
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2.5),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF0284C7).withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Icon(
-                                      Icons.videocam_rounded,
-                                      size: 13,
-                                      color: Color(0xFF0284C7),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-
-                          // Middle Line: Class Code Chip & Room Label
-                          Row(
-                            children: [
-                              // Class Code Chip
+                            ),
+                            if (widget.slot.isOnline)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.all(2.5),
                                 decoration: BoxDecoration(
-                                  color: colorScheme.surface,
+                                  color: const Color(0xFF0284C7).withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(
-                                    color: subjectColor.border,
-                                    width: 0.8,
-                                  ),
                                 ),
-                                child: Text(
-                                  widget.slot.classCode,
-                                  style: TextStyle(
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: subjectColor.onContainer,
-                                  ),
+                                child: const Icon(
+                                  Icons.videocam_rounded,
+                                  size: 13,
+                                  color: Color(0xFF0284C7),
                                 ),
                               ),
-                              const SizedBox(width: 5),
+                          ],
+                        ),
 
-                              // Room Label
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      widget.slot.isOnline
-                                          ? Icons.link_rounded
-                                          : Icons.meeting_room_outlined,
-                                      size: 12,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Expanded(
-                                      child: Text(
-                                        widget.slot.room.isNotEmpty
-                                            ? widget.slot.room
-                                            : (widget.slot.isOnline ? 'Online' : '—'),
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500,
-                                          color: colorScheme.onSurfaceVariant,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                        // Middle Line: Class Code Chip & Room Label
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surface,
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: subjectColor.border,
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Text(
+                                widget.slot.classCode,
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: subjectColor.onContainer,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    widget.slot.isOnline
+                                        ? Icons.link_rounded
+                                        : Icons.meeting_room_outlined,
+                                    size: 12,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Expanded(
+                                    child: Text(
+                                      widget.slot.room.isNotEmpty
+                                          ? widget.slot.room
+                                          : (widget.slot.isOnline ? 'Online' : '—'),
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: colorScheme.onSurfaceVariant,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-
-                          // Bottom Line: Slot Time Subtle Text
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.access_time_rounded,
-                                size: 11,
-                                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  widget.slot.slotTime.isNotEmpty
-                                      ? widget.slot.slotTime
-                                      : FapClassSlot.getSlotTimeRange(widget.slot.slot),
-                                  style: TextStyle(
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.normal,
-                                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+
+                        // Bottom Line: Slot Time Subtle Text
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: 11,
+                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                widget.slot.slotTime.isNotEmpty
+                                    ? widget.slot.slotTime
+                                    : FapClassSlot.getSlotTimeRange(widget.slot.slot),
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.normal,
+                                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -748,7 +730,7 @@ class _TimetableSlotCardState extends State<_TimetableSlotCard> {
 }
 
 // =============================================================================
-// Empty Slot Cell (Subtle Dashed Border & Light Surface)
+// Empty Slot Cell (Fixed Height, Dashed Border)
 // =============================================================================
 class _EmptySlotCell extends StatelessWidget {
   const _EmptySlotCell();
@@ -759,7 +741,7 @@ class _EmptySlotCell extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2.0),
-      constraints: const BoxConstraints(minHeight: 115),
+      height: 111,
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(10),
@@ -772,7 +754,6 @@ class _EmptySlotCell extends StatelessWidget {
           dashLength: 5.0,
           gapLength: 4.0,
         ),
-        child: const SizedBox.expand(),
       ),
     );
   }
@@ -922,7 +903,7 @@ _SubjectColorScheme _getSubjectColorScheme(String subjectCode, BuildContext cont
     return _SubjectColorScheme(
       primary: base.primary,
       container: base.primary.withValues(alpha: 0.18),
-      onContainer: Color.lerp(base.primary, Colors.white, 0.75)!,
+      onContainer: Color.lerp(base.primary, Colors.white, 0.75) ?? Colors.white,
       border: base.primary.withValues(alpha: 0.35),
     );
   }

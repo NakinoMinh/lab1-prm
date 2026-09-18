@@ -229,23 +229,26 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
         color: isSelected ? const Color(0xFFF36F21) : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: ListTile(
-        leading: Icon(icon, color: isSelected ? Colors.white : Colors.grey[400], size: 20),
-        title: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[300],
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 13.5,
+      child: Material(
+        color: Colors.transparent,
+        child: ListTile(
+          leading: Icon(icon, color: isSelected ? Colors.white : Colors.grey[400], size: 20),
+          title: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey[300],
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontSize: 13.5,
+            ),
           ),
+          dense: true,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          onTap: () {
+            setState(() {
+              _selectedTabIndex = index;
+            });
+          },
         ),
-        dense: true,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        onTap: () {
-          setState(() {
-            _selectedTabIndex = index;
-          });
-        },
       ),
     );
   }
